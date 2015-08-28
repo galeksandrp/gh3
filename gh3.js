@@ -248,6 +248,20 @@
 		domain : "api.github.com",
 		callHttpApi : function (apiParams) {
 			apiParams.url = Gh3.Helper.protocol + "://" + Gh3.Helper.domain + "/" + apiParams.service;
+			if (typeof localStorage !== 'undefined') {
+			  if (localStorage.GITHUB_OAUTH) {
+				apiParams.beforeSend = function (xhr) {
+				  xhr.setRequestHeader('Authorization', 'token ' + localStorage.GITHUB_OAUTH);
+				};
+			  }
+			  if (localStorage.GITHUB_CLIENT_ID && localStorage.GITHUB_CLIENT_SECRET) {
+				var separator = '?';
+				if (apiParams.url.indexOf('?') !== -1) {
+				  separator = '&';
+				}
+				apiParams.url += separator + 'client_id=' + localStorage.GITHUB_CLIENT_ID + '&client_secret=' + localStorage.GITHUB_CLIENT_SECRET;
+			  }
+			}
 			if ($.support.cors) {
 				var success = apiParams.success
 				if ($.isFunction(success)) {
